@@ -25,8 +25,8 @@ public class Banker {
 	 */
 	private class ThreadLoan {
 		
-		private final int maxClaim;
-		private int allocated;
+		private final int maxClaim; // The max claim for this thread
+		private int allocated;      // The current allocation for this thread
 		
 		/**
 		 * Creates a new ThreadLoan object with the given int parameter used
@@ -70,7 +70,12 @@ public class Banker {
 		 * @return boolean
 		 */
 		public synchronized boolean setAllocated(int newAllocated){
-			//TODO
+			// Check to see if allocation is between 0 and maxClaim
+			if((newAllocated > this.maxClaim)||(newAllocated < 0)){
+				return false;
+				
+			} // end if
+			this.allocated = newAllocated;
 			return true;
 			
 		} // end method setAllocated
@@ -85,8 +90,8 @@ public class Banker {
 		 * @return boolean
 		 */
 		public synchronized boolean deltaAllocated(int delta){
-			//TODO
-			return true;
+			int tempAllocatioon = this.allocated + delta;
+			return this.setAllocated(tempAllocatioon);
 			
 		} // end method deltaAllocated
 		
