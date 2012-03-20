@@ -16,8 +16,8 @@ public class Banker {
 	
 	private final int totalUnits; // Total number of resources
 	private int availableUnits; // Number of resources Banker has
-	private HashMap<Thread, ThreadLoan> threadClaims; // Registered threads with 
-												   // their max claims.
+	private HashMap<Client, ThreadLoan> threadClaims; // Registered threads
+												      // with their max claims.
 	
 	/**
 	 * A class containing two integers representing a thread's current
@@ -117,9 +117,9 @@ public class Banker {
 	 * @param int nUnits
 	 */
 	public Banker(int nUnits){
-		totalUnits = nUnits;
-		availableUnits = totalUnits;
-		threadClaims = new HashMap<Thread, ThreadLoan>();
+		this.totalUnits = nUnits;
+		this.availableUnits = totalUnits;
+		this.threadClaims = new HashMap<Client, ThreadLoan>();
 		
 	} // end constructor Banker
 	
@@ -130,7 +130,15 @@ public class Banker {
 	 * @param int nUnits
 	 */
 	public synchronized void setClaim(int nUnits){
-		//TODO
+		if((nUnits <= 0)||(nUnits > this.totalUnits)||
+				(this.threadClaims.containsKey(Client.currentThread()))){
+			System.exit(1);
+			
+		} // end if
+		this.threadClaims.put((Client) Client.currentThread(), 
+				new ThreadLoan(nUnits));
+		System.out.println("Thread " + Client.currentThread().getName() +
+				" sets a claim for " + String.valueOf(nUnits) + " units.");
 		
 	} // end method setClaim
 	
