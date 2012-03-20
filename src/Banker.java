@@ -4,6 +4,7 @@
  * @author Yin Poon
  */
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
@@ -23,7 +24,7 @@ public class Banker {
 	 * resource allocation amount and the amount left before reaching
 	 * their max claim.
 	 */
-	private class ThreadLoan {
+	private class ThreadLoan implements Cloneable {
 		
 		private final int maxClaim; // The max claim for this thread
 		private int allocated;      // The current allocation for this thread
@@ -94,6 +95,18 @@ public class Banker {
 			return this.setAllocated(tempAllocatioon);
 			
 		} // end method deltaAllocated
+		
+		/**
+		 * Returns a clone of the current ThreadLoan object.
+		 * 
+		 * @return ThreadLoan
+		 */
+		public synchronized ThreadLoan clone(){
+			ThreadLoan newTL = new ThreadLoan(this.maxClaim);
+			newTL.setAllocated(this.allocated);
+			return newTL;
+			
+		} // end method clone
 		
 	} // end class ThreadLoan
 	
@@ -174,5 +187,49 @@ public class Banker {
 		return 0;
 		
 	} // end method remaining
+	
+	/**
+	 * Takes a map containing ThreadLoan values and creates a sorted ArrayList
+	 * from the values in the map which is then returned. Uses insertion sort
+	 * to make the sorted array.
+	 * 
+	 * @param HashMap<Thread, ThreadLoan> map
+	 * @return ArrayList<ThreadLoan>
+	 */
+	private synchronized ArrayList<ThreadLoan> toSortedArray(
+			HashMap<Thread, ThreadLoan> map){
+		ArrayList<ThreadLoan> sorted = new ArrayList<ThreadLoan>();
+		ArrayList<ThreadLoan> unsorted = 
+			new ArrayList<ThreadLoan>(map.values());
+		
+		// Begin insertion sort
+		for(int i = 0; i < unsorted.size(); i++){
+			if(sorted.isEmpty()){
+				sorted.add(unsorted.get(i).clone());
+				
+			} // if
+			else {
+				for(int j = sorted.size() - 1; j >= 0; j--){
+					if(unsorted.get(i).getRemaining() > 
+					sorted.get(j).getRemaining()){
+						sorted.add(j+1, unsorted.get(i).clone());
+						break;
+						
+					} // end if
+					else if((j==0)&&(unsorted.get(i).getRemaining() < 
+							sorted.get(j).getRemaining())){
+						sorted.add(j, unsorted.get(i).clone());
+						
+					} // end else if
+					
+				} // end for
+				
+			} // end else
+			
+		} // end for
+		// end insertion sort
+		return sorted;
+		
+	} // end method toSortedArray
 	
 } // end class Banker
