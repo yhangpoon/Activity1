@@ -169,7 +169,19 @@ public class Banker {
 	 * @param int nUnits
 	 */
 	public synchronized void release(int nUnits){
-		//TODO
+		if((nUnits <= 0)||(!this.threadClaims.containsKey(
+				(Client)Client.currentThread()))||
+				(this.threadClaims.get(
+						(Client)Client.currentThread()).getAllocated() 
+						< nUnits)){
+			System.exit(1);
+			
+		} // end if
+		int delta = nUnits * (-1); // Make negative for reducing delta
+		this.threadClaims.get(
+				(Client)Client.currentThread()).deltaAllocated(delta);
+		System.out.println("Thread " + Client.currentThread().getName() + 
+				" releases " + String.valueOf(nUnits) + " units.");
 		
 	} // end method release
 	
@@ -179,8 +191,7 @@ public class Banker {
 	 * @return int
 	 */
 	public synchronized int allocated(){
-		//TODO
-		return 0;
+		return this.totalUnits - this.availableUnits;
 		
 	} // end method allocated
 	
@@ -191,8 +202,7 @@ public class Banker {
 	 * @return int
 	 */
 	public synchronized int remaining(){
-		//TODO
-		return 0;
+		return this.availableUnits;
 		
 	} // end method remaining
 	
