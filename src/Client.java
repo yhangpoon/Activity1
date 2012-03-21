@@ -43,7 +43,9 @@ public class Client extends Thread {
 			}
 			else {
 				banker.request(nUnits);
-				Thread.sleep(generate(minSleepMillis, maxSleepMillis));
+				try {
+					Thread.sleep(generate(minSleepMillis, maxSleepMillis));
+				} catch (Exception ignore) { }
 			}
 		}
 		banker.release(nUnits);
@@ -57,11 +59,11 @@ public class Client extends Thread {
 		if(min>max) {
 			throw new IllegalArgumentException("Min cannot exceed Max");
 		}
-		Random random = new Random();
+		Random random = new Random(min);
 		long result;
 		while(true) {
-			result = random.nextLong(max);
-			if(result>=min)
+			result = random.nextLong();
+			if(result<=max)
 				return result;
 		}
 	}
