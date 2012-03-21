@@ -39,10 +39,10 @@ public class Client extends Thread {
 		int counter = 0;
 		while(counter < nRequests) {
 			if(banker.remaining()==0) {
-				bank.release(nUnits);
+				banker.release(nUnits);
 			}
 			else {
-				bank.request(nUnits);
+				banker.request(nUnits);
 				Thread.sleep(generate(minSleepMillis, maxSleepMillis));
 			}
 		}
@@ -53,7 +53,7 @@ public class Client extends Thread {
 	/**
 	 * Generate Random Sleep Time in a Specific Range
 	 */
-	private long generate(long min, long, max) {
+	private long generate(long min, long max) {
 		if(min>max) {
 			throw new IllegalArgumentException("Min cannot exceed Max");
 		}
