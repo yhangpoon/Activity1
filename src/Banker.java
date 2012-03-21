@@ -154,6 +154,17 @@ public class Banker {
 	 * @return boolean
 	 */
 	public synchronized boolean request(int nUnits){
+		HashMap<Client, ThreadLoan> claimCopy = 
+			new HashMap<Client, ThreadLoan>();
+		ArrayList<Client> clients = 
+			new ArrayList<Client>(this.threadClaims.keySet());
+		for(int i=0; i < clients.size(); i++){
+			claimCopy.put(clients.get(i), 
+					this.threadClaims.get(clients.get(i)).clone());
+			
+		} // end for
+		claimCopy.get((Client)Client.currentThread()).deltaAllocated(nUnits);
+		ArrayList<ThreadLoan> tlList = this.toSortedArray(claimCopy);
 		//TODO
 		return true;
 		
@@ -215,7 +226,7 @@ public class Banker {
 	 * @return ArrayList<ThreadLoan>
 	 */
 	private synchronized ArrayList<ThreadLoan> toSortedArray(
-			HashMap<Thread, ThreadLoan> map){
+			HashMap<Client, ThreadLoan> map){
 		ArrayList<ThreadLoan> sorted = new ArrayList<ThreadLoan>();
 		ArrayList<ThreadLoan> unsorted = 
 			new ArrayList<ThreadLoan>(map.values());
