@@ -14,15 +14,15 @@ import java.util.ArrayList;
 public class Driver {
 
   //total number of clients in the system
-  final private static int totalClients;
+  final private static int totalClients = 0;
   //the number of requests each client will run
-  final private static int numOfRequests;
+  final private static int numOfRequests = 0;
   //the number of units the banker has
-  final private static int numOfUnits;
+  final private static int numOfUnits = 0;
   //minimum client sleep time
-  final private static long minSleepMillis;
+  final private static long minSleepMillis = 0;
   //maximum client sleep time
-  final private static long maxSleepMillis;
+  final private static long maxSleepMillis = 0;
 
 	/**
 	 * The main method. Command line arguments are left unused.
