@@ -154,6 +154,20 @@ public class Banker {
 	 * @return boolean
 	 */
 	public synchronized boolean request(int nUnits){
+		// Checking for valid input
+		if((nUnits <= 0)||( // Check for strictly positive
+				// Ensure the thread has a registered claim
+				!this.threadClaims.containsKey((Client)Client.currentThread()))
+				// Ensure request does not exceed remaining claim
+				||(this.threadClaims.get(
+						(Client)Client.currentThread()).getRemaining() < 
+						nUnits)){
+			System.exit(1);
+		}
+		System.out.println("Thread " + Thread.currentThread().getName() +
+				" requests " + String.valueOf(nUnits) + " units.");
+		
+		// Object cloning prep for banker's algorithm
 		HashMap<Client, ThreadLoan> claimCopy = 
 			new HashMap<Client, ThreadLoan>();
 		ArrayList<Client> clients = 
@@ -164,8 +178,22 @@ public class Banker {
 			
 		} // end for
 		claimCopy.get((Client)Client.currentThread()).deltaAllocated(nUnits);
+		
+		// Banker's algorithm
 		ArrayList<ThreadLoan> tlList = this.toSortedArray(claimCopy);
-		//TODO
+		int newRemaining = this.availableUnits - nUnits;
+		for(int i=0; i < tlList.size(); i++){
+			if(newRemaining < tlList.get(i).getRemaining()){
+				//TODO Figure out how to add in the waiting loop.
+				return false;
+				
+			} // end if
+			
+		} // end for
+		this.threadClaims = claimCopy;
+		this.availableUnits -= nUnits;
+		System.out.println("Thread " + Thread.currentThread().getName() +
+				" has " + String.valueOf(nUnits) + " units allocated.");
 		return true;
 		
 	} // end method request
@@ -191,6 +219,7 @@ public class Banker {
 		int delta = nUnits * (-1); // Make negative for reducing delta
 		this.threadClaims.get(
 				(Client)Client.currentThread()).deltaAllocated(delta);
+		this.availableUnits += nUnits;
 		System.out.println("Thread " + Client.currentThread().getName() + 
 				" releases " + String.valueOf(nUnits) + " units.");
 		
